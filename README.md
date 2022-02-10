@@ -34,7 +34,7 @@ pip install -r requirements.txt
 - Create a .env file with your settings, e.g.:
 ```
 FLASK_ENV=development
-DATABASE_URL="sqlite:////tmp/forecast.db"
+DATABASE_URL=sqlite:////tmp/forecast.db
 ```
 
 - Migration commands:
