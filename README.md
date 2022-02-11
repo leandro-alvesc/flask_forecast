@@ -51,3 +51,7 @@ To run the API, run the command:
 ```
 flask run
 ```
+
+## API
+
+Check the API reference [here](API.md).
