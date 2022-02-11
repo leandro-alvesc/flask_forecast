@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 
 from app.models import db, ma
+from app.routes import register_blueprints
 
 # ENV Config
 ENV = environ.get('ENV', 'LOCAL')
@@ -30,3 +31,4 @@ migrate = Migrate(app, db)
 
 
 # Register Blueprints
+register_blueprints(app)
