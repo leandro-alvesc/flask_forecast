@@ -5,7 +5,7 @@ import app
 import requests
 from app.exceptions import BadRequest, InternalServerError
 from app.models import db
-from app.models.forecast import Forecast
+from app.models.forecast import Forecast, forecasts_schema
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -24,14 +24,44 @@ class ForecastController:
             forecast = Forecast.query.filter(
                 Forecast.id_city == id_city,
                 Forecast.date == today.strftime('%Y-%m-%d')).one()
-        except Exception as e:
+        except SQLAlchemyError as e:
             app.logger.error(str(e))
-            app.logger.info('Not found in database, creating new...')
-            forecast = cls.__get_forecast_from_api(id_city)
+            app.logger.error('Not found in database, creating new...')
+            payload = cls.__get_forecasts_from_api(id_city)[0]
+            forecast = cls.__insert_forecast(payload)
+            cls.__commit_session()
         return forecast
 
     @classmethod
-    def __get_forecast_from_api(cls, id):
+    def update_forecasts(cls, id_city):
+        updated_forecasts = list()
+        forecast_list = cls.__get_forecasts_from_api(id_city)
+
+        dates = [fc.get('date') for fc in forecast_list]
+
+        existent_forecasts = Forecast.query.filter(
+            Forecast.id_city == id_city,
+            Forecast.date.in_(dates)).all()
+
+        # Update existent forecast if applicable
+        for forecast in existent_forecasts:
+            date_index = cls.__find_index_in_list(
+                forecast_list, 'date', forecast.date)
+            if date_index is not None:
+                forecast_data = forecast_list.pop(date_index)
+                forecast.date = forecast_data.get('date')
+                updated_forecasts.append(forecast)
+
+        # Create new forecasts
+        new_forecasts = [cls.__insert_forecast(fc) for fc in forecast_list]
+        cls.__commit_session()
+        return {
+            'new': forecasts_schema.dump(new_forecasts),
+            'updated': forecasts_schema.dump(updated_forecasts)
+        }
+
+    @classmethod
+    def __get_forecasts_from_api(cls, id):
         url = f'{app.config.CLIMA_TEMPO_URL}/forecast/locale/{id}/days/15'
         params = {'token': app.config.CLIMA_TEMPO_TOKEN}
         response = requests.get(url, params)
@@ -42,25 +72,31 @@ class ForecastController:
                 'message': 'Invalid city ID'
             })
         response = response.json()
-        today_forecast = response.get('data')[0]
 
-        forecast_rain = today_forecast.get('rain')
-        forecast_temperature = today_forecast.get('temperature')
+        forecast_list = list()
 
-        payload = {
-            'id_city': id,
-            'city': response.get('name'),
-            'state': response.get('state'),
-            'country': response.get('country').split(' ')[0],
-            'date': today_forecast.get('date'),
-            'rain_probability': forecast_rain.get('probability'),
-            'rain_precipitation': forecast_rain.get('precipitation'),
-            'min_temperature': forecast_temperature.get('min'),
-            'max_temperature': forecast_temperature.get('max'),
-        }
+        for forecast in response.get('data'):
+            forecast_rain = forecast.get('rain')
+            forecast_temperature = forecast.get('temperature')
+
+            payload = {
+                'id_city': id,
+                'city': response.get('name'),
+                'state': response.get('state'),
+                'country': response.get('country').split(' ')[0],
+                'date': forecast.get('date'),
+                'rain_probability': forecast_rain.get('probability'),
+                'rain_precipitation': forecast_rain.get('precipitation'),
+                'min_temperature': forecast_temperature.get('min'),
+                'max_temperature': forecast_temperature.get('max'),
+            }
+            forecast_list.append(payload)
+        return forecast_list
+
+    @staticmethod
+    def __insert_forecast(payload):
         forecast = Forecast(**payload)
         db.session.add(forecast)
-        cls.__commit_session()
         return forecast
 
     @classmethod
@@ -82,3 +118,10 @@ class ForecastController:
             'code': code.upper(),
             'message': message
         }
+
+    @staticmethod
+    def __find_index_in_list(lst, key, value):
+        for i, dic in enumerate(lst):
+            if dic.get(key) == value:
+                return i
+        return None

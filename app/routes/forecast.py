@@ -18,3 +18,10 @@ def get_forecast(data, **kwargs):
     id = data.get('id')
     today_forecast = ForecastController.get_today_forecast_by_city_id(id)
     return jsonify(forecast_schema.dump(today_forecast))
+
+
+@forecasts.route('/sync', methods=['GET'])
+@Dec.required_id
+def sync_forecasts(data, **kwargs):
+    id = data.get('id')
+    return jsonify(ForecastController.update_forecasts(id))
