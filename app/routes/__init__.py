@@ -1,5 +1,5 @@
-from app.routes.forecast import forecast
+from app.routes.forecast import forecasts
 
 
 def register_blueprints(app):
-    app.register_blueprint(forecast, url_prefix='/forecast')
+    app.register_blueprint(forecasts, url_prefix='/forecasts')
