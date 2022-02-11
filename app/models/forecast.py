@@ -1,4 +1,6 @@
-from marshmallow import fields, validate
+from datetime import datetime
+from marshmallow import ValidationError, fields, validate, validates
+import app
 
 from app.models import db, ma
 
@@ -14,13 +16,13 @@ class Forecast(db.Model):
     date = db.Column(db.String(10), nullable=False)
     rain_probability = db.Column(db.Integer, nullable=False)
     rain_precipitation = db.Column(db.Integer, nullable=False)
-    max_temperature = db.Column(db.Integer, nullable=False)
     min_temperature = db.Column(db.Integer, nullable=False)
+    max_temperature = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, city, id_city, state, country, date, rain_probability,
-                 rain_precipitation, max_temperature, min_temperature):
-        self.city = city
+    def __init__(self, id_city, city, state, country, date, rain_probability,
+                 rain_precipitation, min_temperature, max_temperature):
         self.id_city = id_city
+        self.city = city
         self.state = state
         self.country = country
         self.date = date
@@ -36,12 +38,19 @@ class ForecastSchema(ma.Schema):
     city = fields.Str(required=True, validate=validate.Length(2, 30))
     state = fields.Str(required=True, validate=validate.Length(2, 2))
     country = fields.Str(required=True, validate=validate.Length(2, 2))
-    date = fields.Date(required=True)
+    date = fields.Str(required=True)
     rain_probability = fields.Int(
         required=True, validate=validate.Range(0, 100))
     rain_precipitation = fields.Int(required=True)
     min_temperature = fields.Int(required=True)
     max_temperature = fields.Int(required=True)
+
+    @validates('date')
+    def validate_date(self, value):
+        try:
+            datetime.strptime(value, '%Y-%m-%d')
+        except ValidationError as err:
+            app.logger.error(str(err))
 
 
 forecast_schema = ForecastSchema()
