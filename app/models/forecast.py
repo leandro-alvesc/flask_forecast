@@ -7,6 +7,7 @@ class Forecast(db.Model):
     __tablename__ = 'forecast'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_city = db.Column(db.Integer, nullable=False)
     city = db.Column(db.String(60), nullable=False)
     state = db.Column(db.String(2), nullable=False)
     country = db.Column(db.String(2), nullable=False)
@@ -16,9 +17,10 @@ class Forecast(db.Model):
     max_temperature = db.Column(db.Integer, nullable=False)
     min_temperature = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, city, state, country, date, rain_probability,
+    def __init__(self, city, id_city, state, country, date, rain_probability,
                  rain_precipitation, max_temperature, min_temperature):
         self.city = city
+        self.id_city = id_city
         self.state = state
         self.country = country
         self.date = date
@@ -30,6 +32,7 @@ class Forecast(db.Model):
 
 class ForecastSchema(ma.Schema):
     id = fields.Int(dump_only=True)
+    id_city = fields.Int(required=True)
     city = fields.Str(required=True, validate=validate.Length(2, 30))
     state = fields.Str(required=True, validate=validate.Length(2, 2))
     country = fields.Str(required=True, validate=validate.Length(2, 2))
