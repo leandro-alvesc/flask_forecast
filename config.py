@@ -8,6 +8,8 @@ class Config:
     SECRET_KEY = 'change-this-please'
     JWT_SECRET_KEY = 'another-key-to-change'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    CLIMA_TEMPO_TOKEN = os.environ.get('CLIMA_TEMPO_TOKEN')
+    CLIMA_TEMPO_URL = 'http://apiadvisor.climatempo.com.br/api/v1/forecast'
 
 
 class DevelopmentConfig(Config):
