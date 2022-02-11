@@ -20,7 +20,7 @@ def get_forecast(data, **kwargs):
     return jsonify(forecast_schema.dump(today_forecast))
 
 
-@forecasts.route('/sync', methods=['GET'])
+@forecasts.route('/city/sync', methods=['GET'])
 @Dec.required_id
 def sync_forecasts(data, **kwargs):
     id = data.get('id')
