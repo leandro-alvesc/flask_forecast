@@ -66,11 +66,15 @@ class ForecastController:
         params = {'token': app.config.CLIMA_TEMPO_TOKEN}
         response = requests.get(url, params)
 
+        app.logger.info(f'GET {url}')
         if not response.ok:
+            app.logger.error(f'GET {url}: {response.content}')
+            app.logger.error(f'PARAMS: {params}')
             raise BadRequest({
                 'code': 'BAD_REQUEST',
                 'message': 'Invalid city ID'
             })
+        app.logger.info(f'GET {url}: SUCCESS')
         response = response.json()
 
         forecast_list = list()
