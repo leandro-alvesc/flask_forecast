@@ -61,6 +61,10 @@ class ForecastController:
         }
 
     @classmethod
+    def analysis_forecasts(cls, init_date, end_date):
+        pass
+
+    @classmethod
     def __get_forecasts_from_api(cls, id):
         url = f'{app.config.CLIMA_TEMPO_URL}/forecast/locale/{id}/days/15'
         params = {'token': app.config.CLIMA_TEMPO_TOKEN}

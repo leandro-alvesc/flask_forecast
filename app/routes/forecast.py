@@ -16,8 +16,8 @@ def get_forecasts():
 @forecasts.route('/analysis', methods=['GET'])
 @Dec.required_schema(analysis_schema)
 def forecast_analysis(body, *args, **kwargs):
-    analysis = ForecastController.get_forecasts()
-    return jsonify(forecasts_schema.dump(analysis))
+    analysis = ForecastController.analysis_forecasts()
+    return jsonify(analysis)
 
 
 @forecasts.route('/city', methods=['GET'])
