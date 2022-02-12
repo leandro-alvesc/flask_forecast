@@ -16,7 +16,9 @@ def get_forecasts():
 @forecasts.route('/analysis', methods=['GET'])
 @Dec.required_schema(analysis_schema)
 def forecast_analysis(body, *args, **kwargs):
-    analysis = ForecastController.analysis_forecasts()
+    init_date = body.get('init_date')
+    end_date = body.get('end_date')
+    analysis = ForecastController.analysis_forecasts(init_date, end_date)
     return jsonify(analysis)
 
 

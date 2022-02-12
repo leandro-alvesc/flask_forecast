@@ -14,12 +14,17 @@ class TestLogin(unittest.TestCase):
         db.create_all()
 
         self.city_id = 3477
+        self.init_date = '2022-02-11'
+        self.end_date = '2022-02-16'
 
         self.forecasts = self.client.get('/forecasts')
         self.today_forecast = self.client.get(
             f'/forecasts/city?id={self.city_id}')
         self.sync_forecast = self.client.get(
             f'/forecasts/city/sync?id={self.city_id}')
+        self.analysis = self.client.get(
+            f'/forecasts/analysis?id={self.city_id}'
+            f'&init_date={self.init_date}&end_date={self.end_date}')
 
     def test_get_forecasts(self):
         print(self.forecasts.json)
@@ -30,3 +35,6 @@ class TestLogin(unittest.TestCase):
 
     def test_sync_forecast(self):
         self.assertEqual(200, self.sync_forecast.status_code)
+
+    def test_analysis(self):
+        self.assertEqual(200, self.analysis.status_code)
