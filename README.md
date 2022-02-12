@@ -16,6 +16,7 @@ Before you start, make sure you have the following resources:
 * SQLite
 * A virtual environment to run the application
 * A SQLite database
+* Docker and Docker Compose
 
 ## 🚀 Setting up
 
@@ -52,6 +53,18 @@ To run the API, run the command:
 flask run
 ```
 
-## API
+## 🐳 Docker
+
+- Build Docker:
+```
+docker-compose build
+```
+
+- Run Docker:
+```
+docker-compose up
+```
+
+## 🛴 API
 
 Check the API reference [here](API.md).
