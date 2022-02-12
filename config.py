@@ -6,7 +6,7 @@ class Config:
     DEBUG = False
     TESTING = False
     SECRET_KEY = 'change-this-please'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///forecast.db'
     CLIMA_TEMPO_TOKEN = os.environ.get('CLIMA_TEMPO_TOKEN')
     CLIMA_TEMPO_URL = 'http://apiadvisor.climatempo.com.br/api/v1'
 
