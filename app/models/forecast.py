@@ -1,5 +1,5 @@
 from datetime import datetime
-from marshmallow import ValidationError, fields, validate, validates
+from marshmallow import ValidationError, fields, validate
 import app
 
 from app.models import db, ma
@@ -32,27 +32,38 @@ class Forecast(db.Model):
         self.max_temperature = max_temperature
 
 
+def validate_date(value):
+    try:
+        datetime.strptime(value, '%Y-%m-%d')
+    except ValidationError as err:
+        app.logger.error(str(err))
+
+
 class ForecastSchema(ma.Schema):
     id = fields.Int(dump_only=True)
     id_city = fields.Int(required=True)
     city = fields.Str(required=True, validate=validate.Length(2, 30))
     state = fields.Str(required=True, validate=validate.Length(2, 2))
     country = fields.Str(required=True, validate=validate.Length(2, 2))
-    date = fields.Str(required=True)
+    date = fields.Str(required=True, validate=validate_date)
     rain_probability = fields.Int(
         required=True, validate=validate.Range(0, 100))
     rain_precipitation = fields.Int(required=True)
     min_temperature = fields.Int(required=True)
     max_temperature = fields.Int(required=True)
 
-    @validates('date')
-    def validate_date(self, value):
-        try:
-            datetime.strptime(value, '%Y-%m-%d')
-        except ValidationError as err:
-            app.logger.error(str(err))
+
+class CityIDSchema(ma.Schema):
+    id = fields.Int(required=True)
 
 
+class AnalysisSchema(CityIDSchema):
+    init_date = fields.Str(required=True, validate=validate_date)
+    end_date = fields.Str(required=True, validate=validate_date)
+
+
+city_id_schema = CityIDSchema()
+analysis_schema = AnalysisSchema()
 forecast_schema = ForecastSchema()
 partial_forecast_schema = ForecastSchema(partial=True)
 forecasts_schema = ForecastSchema(many=True)
