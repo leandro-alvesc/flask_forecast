@@ -1,0 +1,12 @@
+version: "3.9"
+   
+services:
+  web:
+    container_name: flaskforecast
+    build:
+      context: .
+    environment:
+      - PORT=5000
+      - CLIMA_TEMPO_TOKEN=${CLIMA_TEMPO_TOKEN}
+    ports:
+      - "5000:5000"
