@@ -1,4 +1,3 @@
-import os
 import unittest
 
 from app import app
@@ -14,16 +13,16 @@ class TestLogin(unittest.TestCase):
 
         db.create_all()
 
-        self.token = os.environ.get('CLIMA_TEMPO_TOKEN')
         self.city_id = 3477
 
         self.forecasts = self.client.get('/forecasts')
         self.today_forecast = self.client.get(
-            f'/forecasts/city?token={self.token}&id={self.city_id}')
+            f'/forecasts/city?id={self.city_id}')
         self.sync_forecast = self.client.get(
-            f'/forecasts/city/sync?token={self.token}&id={self.city_id}')
+            f'/forecasts/city/sync?id={self.city_id}')
 
     def test_get_forecasts(self):
+        print(self.forecasts.json)
         self.assertEqual(200, self.forecasts.status_code)
 
     def test_get_today_forecast(self):
