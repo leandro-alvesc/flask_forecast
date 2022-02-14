@@ -25,6 +25,7 @@ class ForecastController:
             forecast = Forecast.query.filter(
                 Forecast.id_city == id_city,
                 Forecast.date == today.strftime('%Y-%m-%d')).one()
+            app.logger.info('Found in database!')
         except SQLAlchemyError as e:
             app.logger.error(str(e))
             app.logger.error('Not found in database, creating new...')
@@ -63,6 +64,7 @@ class ForecastController:
 
     @classmethod
     def analysis_forecasts(cls, init_date, end_date):
+        app.logger.info(f'Analyzing data from {init_date} to {end_date}...')
         forecasts = Forecast.query.filter(
             func.DATE(Forecast.date) >= init_date,
             func.DATE(Forecast.date) <= end_date).all()
@@ -116,7 +118,7 @@ class ForecastController:
                 'code': 'BAD_REQUEST',
                 'message': 'Invalid city ID'
             })
-        app.logger.info(f'GET {url}: SUCCESS')
+        app.logger.info(f'[SUCCESS] GET {url}')
         response = response.json()
 
         forecast_list = list()
