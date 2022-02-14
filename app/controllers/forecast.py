@@ -6,6 +6,7 @@ import requests
 from app.exceptions import BadRequest, InternalServerError
 from app.models import db
 from app.models.forecast import Forecast, forecasts_schema
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -62,7 +63,44 @@ class ForecastController:
 
     @classmethod
     def analysis_forecasts(cls, init_date, end_date):
-        pass
+        forecasts = Forecast.query.filter(
+            func.DATE(Forecast.date) >= init_date,
+            func.DATE(Forecast.date) <= end_date).all()
+        forecasts = forecasts_schema.dump(forecasts)
+        analysis = dict()
+
+        max_temperature_city = max(
+            forecasts, key=lambda x: x['max_temperature'])
+
+        analysis.update({
+            'max_temperature': {
+                'id_city': max_temperature_city.get('id_city'),
+                'city': max_temperature_city.get('city'),
+                'date': max_temperature_city.get('date'),
+                'max_temperature': max_temperature_city.get('max_temperature'),
+                'min_temperature': max_temperature_city.get('min_temperature'),
+            }
+        })
+
+        cities = dict()
+        for forecast in forecasts:
+            id_city = forecast.get('id_city')
+            if id_city not in cities:
+                cities[id_city] = dict()
+                cities[id_city]['city'] = forecast.get('city')
+                cities[id_city]['precipitations'] = list()
+            cities[id_city]['precipitations'].append(forecast.get(
+                'rain_precipitation'))
+
+        avarage_precipitation = {
+            key: {
+                'city': cities[key].get('city'),
+                'avarage_precipitation': cls.__avarage_value(
+                    cities[key].get('precipitations'))
+            } for key in cities
+        }
+        analysis.update({'avarage_precipitation': avarage_precipitation})
+        return analysis
 
     @classmethod
     def __get_forecasts_from_api(cls, id):
@@ -133,3 +171,7 @@ class ForecastController:
             if dic.get(key) == value:
                 return i
         return None
+
+    @staticmethod
+    def __avarage_value(lst):
+        return round(sum(lst) / len(lst), 2)

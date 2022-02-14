@@ -1,8 +1,9 @@
 from datetime import datetime
-from marshmallow import ValidationError, fields, validate
+from marshmallow import fields, validate
 import app
 
 from app.models import db, ma
+from app.exceptions import BadRequest
 
 
 class Forecast(db.Model):
@@ -35,8 +36,13 @@ class Forecast(db.Model):
 def validate_date(value):
     try:
         datetime.strptime(value, '%Y-%m-%d')
-    except ValidationError as err:
-        app.logger.error(str(err))
+    except ValueError as err:
+        message = str(err)
+        app.logger.error(message)
+        raise BadRequest({
+            'code': 'BAD_REQUEST',
+            'message': message
+        })
 
 
 class ForecastSchema(ma.Schema):

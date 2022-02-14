@@ -27,7 +27,6 @@ class TestLogin(unittest.TestCase):
             f'&init_date={self.init_date}&end_date={self.end_date}')
 
     def test_get_forecasts(self):
-        print(self.forecasts.json)
         self.assertEqual(200, self.forecasts.status_code)
 
     def test_get_today_forecast(self):
