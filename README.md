@@ -18,6 +18,8 @@ Before you start, make sure you have the following resources:
 * A SQLite database
 * Docker and Docker Compose
 
+You can run it manually or with Docker.
+
 ## 🚀 Setting up
 
 Run the following commands:
