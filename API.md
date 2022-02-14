@@ -162,3 +162,44 @@ id=<city_id>
     }
   ]
 ```
+
+## Analysis forecast by period
+
+- URL
+```
+GET /forecasts/analysis
+```
+
+- Params
+```
+id=<city_id>
+init_date=<YYYY-MM-DD>
+end_date=<YYYY-MM-DD>
+```
+
+- Response
+```
+{
+	"avarage_precipitation": {
+		"3477": {
+			"avarage_precipitation": 8.0,
+			"city": "São Paulo"
+		},
+		"3521": {
+			"avarage_precipitation": 8.5,
+			"city": "Taubaté"
+		},
+		"3777": {
+			"avarage_precipitation": 9.83,
+			"city": "Pindamonhangaba"
+		}
+	},
+	"max_temperature": {
+		"city": "Pindamonhangaba",
+		"date": "2022-02-14",
+		"id_city": 3777,
+		"max_temperature": 32,
+		"min_temperature": 17
+	}
+}
+```
