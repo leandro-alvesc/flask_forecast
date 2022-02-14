@@ -20,7 +20,7 @@ Before you start, make sure you have the following resources:
 
 You can run it manually or with Docker.
 
-## 🚀 Setting up
+## 🚀 Setting up to run manually
 
 Run the following commands:
 
@@ -47,7 +47,7 @@ flask db migrate
 flask db upgrade
 ```
 
-## 🗃 Initializing
+## 🗃 Initializing manually
 
 To run the API, run the command:
 
@@ -56,6 +56,11 @@ flask run
 ```
 
 ## 🐳 Docker
+
+- Create a .env file with your Clima Tempo Token::
+```
+CLIMA_TEMPO_TOKEN=<your-climatempo-token>
+```
 
 - Build Docker:
 ```
